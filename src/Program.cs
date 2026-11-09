@@ -39,14 +39,15 @@ namespace BroadcastMicGuard {
                 }
                 return 0;
             } catch(Exception ex) {
-                File.AppendAllText(Path.Combine(Data,"startup-error.log"),DateTime.UtcNow.ToString("o")+" "+ex+Environment.NewLine);
+                new Log("startup-error.log").Write(ex.ToString());
                 MessageBox.Show(ex.Message,"Broadcast Mic Resume Guard",MessageBoxButtons.OK,MessageBoxIcon.Error);
                 return 1;
             }
         }
     }
     internal sealed class Log {
-        readonly string path=Path.Combine(Program.Data,"events.log");
+        readonly string path;
+        public Log(string name="events.log") { path=Path.Combine(Program.Data,name); }
         public void Write(string value) {
             // Called only on the message-loop thread. Keep one backup, at most ~2 MB total.
             if(File.Exists(path) && new FileInfo(path).Length > 1024*1024) {
