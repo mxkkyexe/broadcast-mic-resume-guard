@@ -1,8 +1,16 @@
 [CmdletBinding()]
-param([switch]$NoStart)
+param([switch]$NoStart,[switch]$AllowDisabledLegacyTask)
 $ErrorActionPreference='Stop'
 $existing=Get-ScheduledTask -TaskName 'Broadcast Mic Resume Guard' -ErrorAction SilentlyContinue
-if($existing) { throw 'A legacy Broadcast Mic Resume Guard task exists. Uninstall that version first to avoid running two guards.' }
+if($existing) {
+    if(-not $AllowDisabledLegacyTask -or $existing.State -ne 'Disabled') {
+        throw 'A legacy guard task exists. Uninstall it, or stop and disable it before installing with -AllowDisabledLegacyTask.'
+    }
+    $legacyProcesses=@(Get-CimInstance Win32_Process | Where-Object {
+        $_.Name -eq 'powershell.exe' -and $_.CommandLine -match '(?i)\s-File\s' -and $_.CommandLine -match '(?i)[\\/]Guard\.ps1(?:["\s]|$)'
+    })
+    if($legacyProcesses.Count) { throw 'A legacy Guard.ps1 process is still running. Stop it before continuing.' }
+}
 $source=$PSScriptRoot
 if(-not (Test-Path "$source\BroadcastMicResumeGuard.exe")) { throw 'Run this installer from the built distribution folder.' }
 $destination=Join-Path $env:LOCALAPPDATA 'Programs\BroadcastMicResumeGuard'

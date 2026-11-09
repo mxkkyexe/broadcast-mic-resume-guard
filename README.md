@@ -42,7 +42,7 @@ To start automatically at login, run the installer **from the built `dist` direc
 powershell -NoProfile -ExecutionPolicy Bypass -File .\dist\Install.ps1
 ```
 
-It copies the application to `%LOCALAPPDATA%\Programs\BroadcastMicResumeGuard` and creates a shortcut in your Startup folder. `-NoStart` installs without launching immediately. It refuses to install over the legacy scheduled-task guard; remove that version first. Building and running diagnostics does not replace an existing installation.
+It copies the application to `%LOCALAPPDATA%\Programs\BroadcastMicResumeGuard` and creates a shortcut in your Startup folder. `-NoStart` installs without launching immediately. It refuses to install over the legacy scheduled-task guard by default; remove that version first. For a reversible migration, stop and disable the legacy task, then use `-AllowDisabledLegacyTask` to keep that disabled task for rollback. The installer also checks for a running legacy `Guard.ps1` process. Building and running diagnostics does not replace an existing installation.
 
 To remove it, run the installed `Uninstall.ps1` or the copy in `dist`:
 
