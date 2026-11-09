@@ -1,0 +1,9 @@
+bin/
+obj/
+dist/
+*.log
+*.log.*
+*.user
+*.zip
+diagnostics*.txt
+.vs/

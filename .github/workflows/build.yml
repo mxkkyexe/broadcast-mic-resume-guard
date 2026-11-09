@@ -1,0 +1,21 @@
+name: Windows build and policy tests
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile and test
+        shell: powershell
+        run: ./scripts/Build.ps1
+      - name: Upload experimental build
+        uses: actions/upload-artifact@v4
+        with:
+          name: broadcast-mic-resume-guard-experimental
+          path: |
+            dist/*
+            !dist/PolicyTests.exe
